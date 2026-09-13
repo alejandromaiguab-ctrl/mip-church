@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia do Sistema — MIP Church</title>
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --gray-50: #f8f8f8;
+    --gray-100: #f0f0f0;
+    --gray-200: #e0e0e0;
+    --gray-400: #999;
+    --gray-600: #555;
+    --gray-800: #222;
+    --accent: #1a1a1a;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--black);
+    color: var(--white);
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  .hero-logo {
+    width: 64px; height: 64px;
+    border: 2px solid #333;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin: 0 auto 18px;
+    background: #111;
+  }
+  .hero h1 { font-size: 26px; font-weight: 800; letter-spacing: .06em; margin-bottom: 6px; }
+  .hero p { font-size: 14px; color: #aaa; max-width: 320px; margin: 0 auto; line-height: 1.6; }
+
+  /* SELECTOR */
+  .selector-wrap {
+    padding: 28px 20px 0;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .selector-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  @media(min-width: 420px) { .roles-grid { grid-template-columns: repeat(3, 1fr); } }
+  .role-btn {
+    background: var(--white);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .role-btn:hover { border-color: var(--gray-400); }
+  .role-btn.active {
+    background: var(--black);
+    border-color: var(--black);
+    color: var(--white);
+  }
+  .role-btn .role-icon { font-size: 22px; margin-bottom: 5px; }
+  .role-btn .role-name { font-size: 13px; font-weight: 600; }
+  .role-btn .role-sub { font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+  .role-btn.active .role-sub { color: #888; }
+
+  /* CONTENT */
+  .content-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 24px 20px 48px;
+  }
+
+  /* WELCOME CARD */
+  .welcome-card {
+    background: var(--black);
+    color: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .welcome-card.show { display: block; }
+  .welcome-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .welcome-desc { font-size: 13px; color: #bbb; line-height: 1.6; }
+
+  /* SECTION */
+  .section { margin-bottom: 20px; display: none; }
+  .section.show { display: block; }
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--gray-400);
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  /* FEATURE CARD */
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .feature-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .feature-icon {
+    width: 38px; height: 38px;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .feature-name { font-size: 14px; font-weight: 600; }
+  .feature-sub { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+
+  /* STEPS */
+  .steps { list-style: none; }
+  .step {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 13px;
+    line-height: 1.5;
+    align-items: flex-start;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 20px; height: 20px;
+    background: var(--black);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* TIP */
+  .tip {
+    background: #f0f7ff;
+    border-left: 3px solid #3b82f6;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #1e3a5f;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+  .tip strong { display: block; margin-bottom: 2px; }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--gray-100);
+    color: var(--gray-600);
+  }
+  .badge-green { background: #e6f4ea; color: #1a7a2e; }
+  .badge-blue { background: #e8f0fe; color: #1a56db; }
+
+  /* EMPTY */
+  .empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--gray-400);
+    font-size: 14px;
+    display: none;
+  }
+  .empty.show { display: block; }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 11px;
+    color: var(--gray-400);
+    border-top: 1px solid var(--gray-200);
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-logo">⛪</div>
+  <h1>MIP CHURCH</h1>
+  <p>Guia do sistema para a equipe do ministério</p>
+</div>
+
+<div class="selector-wrap">
+  <div class="selector-label">Qual é o seu perfil?</div>
+  <div class="roles-grid">
+    <div class="role-btn" onclick="selectRole('admin')">
+      <div class="role-icon">👑</div>
+      <div class="role-name">Admin</div>
+      <div class="role-sub">Acesso total</div>
+    </div>
+    <div class="role-btn" onclick="selectRole('coordenador')">
+      <div class="role-icon">🗂</div>
+      <div class="role-name">Coordenador</div>
+      <div class="role-sub">Coordenação geral</div>
+    </div>
+    <div class="role-btn" onclick="selectRole('lideranca')">
+      <div class="role-icon">🙋</div>
+      <div class="role-name">Liderança</div>
+      <div class="role-sub">Líderes de área</div>
+    </div>
+    <div class="role-btn" onclick="selectRole('recepcao')">
+      <div class="role-icon">🤝</div>
+      <div class="role-name">Recepção</div>
+      <div class="role-sub">Acolhimento</div>
+    </div>
+    <div class="role-btn" onclick="selectRole('midia')">
+      <div class="role-icon">🎥</div>
+      <div class="role-name">Mídia</div>
+      <div class="role-sub">Som / Projeção</div>
+    </div>
+    <div class="role-btn" onclick="selectRole('bistro')">
+      <div class="role-icon">☕</div>
+      <div class="role-name">Bistrô</div>
+      <div class="role-sub">Alimentação</div>
+    </div>
+    <div class="role-btn" onclick="selectRole('financeiro')">
+      <div class="role-icon">💰</div>
+      <div class="role-name">Financeiro</div>
+      <div class="role-sub">Entradas e saídas</div>
+    </div>
+    <div class="role-btn" onclick="selectRole('gps')">
+      <div class="role-icon">🌍</div>
+      <div class="role-name">GPS Precursores</div>
+      <div class="role-sub">Sobre o programa</div>
+    </div>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+  <!-- EMPTY STATE -->
+  <div class="empty show" id="empty-state">
+    <div class="empty-icon">👆</div>
+    Escolha seu perfil acima para ver o guia
+  </div>
+
+  <!-- ADMIN -->
+  <div class="section" id="section-admin">
+    <div class="welcome-card show">
+      <div class="welcome-title">👑 Admin — Visão completa</div>
+      <div class="welcome-desc">Você tem acesso a todas as áreas do sistema. Sua responsabilidade é manter tudo funcionando: usuários, cultos, escalas, financeiro e muito mais.</div>
+    </div>
+
+    <div class="section-title">Antes de cada culto</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📅</div>
+        <div><div class="feature-name">Cadastrar o culto</div><div class="feature-sub">Menu → Cultos</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Toque em <strong>+ Novo culto</strong></li>
+        <li class="step"><div class="step-num">2</div>Preencha a data, tema e pregador</li>
+        <li class="step"><div class="step-num">3</div>Salve — o culto fica disponível para as escalas</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📋</div>
+        <div><div class="feature-name">Preencher a escala</div><div class="feature-sub">Menu → Escalas</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto no topo</li>
+        <li class="step"><div class="step-num">2</div>Para cada departamento, escolha quem vai servir</li>
+        <li class="step"><div class="step-num">3</div>Cada seleção salva automaticamente</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">🎙</div>
+        <div><div class="feature-name">Ordem do Culto</div><div class="feature-sub">Menu → Ordem do Culto</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto</li>
+        <li class="step"><div class="step-num">2</div>Preencha os responsáveis por cada momento: Abertura, Ofertas/Anúncios, Palavra, Visitantes, Encerramento</li>
+        <li class="step"><div class="step-num">3</div>Informe o pregador e o tema da mensagem</li>
+        <li class="step"><div class="step-num">4</div>Salve — a equipe pode ver na aba Dashboard do Culto</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Durante e após o culto</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">👥</div>
+        <div><div class="feature-name">Registrar visitantes</div><div class="feature-sub">Menu → Visitantes</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Toque em <strong>+ Novo</strong></li>
+        <li class="step"><div class="step-num">2</div>Preencha nome, telefone e como conheceu o ministério</li>
+        <li class="step"><div class="step-num">3</div>Se for segunda visita, marque a opção</li>
+        <li class="step"><div class="step-num">4</div>O botão 💬 WhatsApp fica disponível direto no registro</li>
+      </ul>
+      <div class="tip"><strong>Promoção</strong> Visitante que se integra vira Membro com o botão → Membro. Membro que começa a servir vira Voluntário com → Voluntário.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📝</div>
+        <div><div class="feature-name">Relatório pós-culto</div><div class="feature-sub">Menu → Relatório</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto</li>
+        <li class="step"><div class="step-num">2</div>Preencha presença, decisões, nota do culto</li>
+        <li class="step"><div class="step-num">3</div>As informações alimentam o Dashboard automaticamente</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">🙏</div>
+        <div><div class="feature-name">Acompanhar decisões</div><div class="feature-sub">Menu → Decisões</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Registre salvos, batismo e reconciliados</li>
+        <li class="step"><div class="step-num">2</div>Acompanhe o follow-up nas semanas 1, 2 e 4</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Gestão da equipe</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">🔑</div>
+        <div><div class="feature-name">Gerenciar usuários</div><div class="feature-sub">Menu → Usuários</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Crie o acesso de cada membro da equipe com email, senha e perfil</li>
+        <li class="step"><div class="step-num">2</div>Cada perfil dá acesso apenas ao que a pessoa precisa para servir</li>
+        <li class="step"><div class="step-num">3</div>Para remover acesso, toque em Remover no usuário</li>
+      </ul>
+      <div class="tip"><strong>Dica</strong> Crie todos os usuários antes da reunião de equipe para que cada pessoa já entre com o próprio acesso.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📢</div>
+        <div><div class="feature-name">Avisos internos</div><div class="feature-sub">Menu → Usuários → aba Avisos</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Publique avisos que toda a equipe vê ao entrar no sistema</li>
+        <li class="step"><div class="step-num">2</div>Você pode ocultar ou excluir quando não for mais relevante</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- COORDENADOR -->
+  <div class="section" id="section-coordenador">
+    <div class="welcome-card show">
+      <div class="welcome-title">🗂 Coordenador</div>
+      <div class="welcome-desc">Você tem acesso a quase tudo — exceto financeiro e criação de usuários. Sua função é garantir que a operação do ministério flua bem antes, durante e após cada culto.</div>
+    </div>
+
+    <div class="section-title">Antes de cada culto</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📋</div>
+        <div><div class="feature-name">Escalas</div><div class="feature-sub">Menu → Escalas</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto no topo</li>
+        <li class="step"><div class="step-num">2</div>Você vê e pode editar todos os departamentos</li>
+        <li class="step"><div class="step-num">3</div>Cada alteração salva na hora</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">🎙</div>
+        <div><div class="feature-name">Ordem do Culto</div><div class="feature-sub">Menu → Ordem do Culto</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Preencha os responsáveis de cada momento</li>
+        <li class="step"><div class="step-num">2</div>Registre pregador e tema</li>
+        <li class="step"><div class="step-num">3</div>A aba Dashboard do Culto mostra a visão completa</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Após o culto</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">👥</div>
+        <div><div class="feature-name">Visitantes e Membros</div><div class="feature-sub">Menu → Visitantes / Membros</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Registre novos visitantes</li>
+        <li class="step"><div class="step-num">2</div>Promova visitante → Membro → Voluntário conforme o engajamento</li>
+        <li class="step"><div class="step-num">3</div>Use o botão WhatsApp para acompanhar diretamente</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">🙋</div>
+        <div><div class="feature-name">Voluntários</div><div class="feature-sub">Menu → Voluntários</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Cadastre novos voluntários ou edite os existentes</li>
+        <li class="step"><div class="step-num">2</div>Uma pessoa pode servir em vários departamentos — marque todos</li>
+        <li class="step"><div class="step-num">3</div>As funções ficam visíveis na escala de cada culto</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- LIDERANÇA -->
+  <div class="section" id="section-lideranca">
+    <div class="welcome-card show">
+      <div class="welcome-title">🙋 Liderança</div>
+      <div class="welcome-desc">Você tem acesso às principais áreas operacionais do ministério. Seu foco é o acompanhamento das pessoas e a operação do culto.</div>
+    </div>
+
+    <div class="section-title">Antes do culto</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📋</div>
+        <div><div class="feature-name">Ver sua escala</div><div class="feature-sub">Menu → Escalas</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto para ver a escala completa</li>
+        <li class="step"><div class="step-num">2</div>Você edita apenas o bloco da Liderança</li>
+        <li class="step"><div class="step-num">3</div>Os demais departamentos ficam visíveis mas bloqueados para você</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">🎙</div>
+        <div><div class="feature-name">Ordem do Culto</div><div class="feature-sub">Menu → Ordem do Culto</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Preencha os responsáveis de cada momento do culto</li>
+        <li class="step"><div class="step-num">2</div>Marque cada momento como ✓ Realizado durante ou após o culto</li>
+        <li class="step"><div class="step-num">3</div>Consulte o Dashboard do Culto para ver tudo junto</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Acompanhamento de pessoas</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">👥</div>
+        <div><div class="feature-name">Visitantes</div><div class="feature-sub">Menu → Visitantes</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Cadastre visitantes durante ou após o culto</li>
+        <li class="step"><div class="step-num">2</div>Entre no registro para ver telefone e contatar pelo WhatsApp</li>
+        <li class="step"><div class="step-num">3</div>Promova para Membro quando a pessoa se integrar</li>
+      </ul>
+      <div class="tip"><strong>Lembre-se</strong> O acompanhamento começa no sistema — mas o contato humano é o que faz a diferença.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">🙏</div>
+        <div><div class="feature-name">Decisões</div><div class="feature-sub">Menu → Decisões</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Registre quem tomou uma decisão no culto (salvo, batismo, reconciliação)</li>
+        <li class="step"><div class="step-num">2</div>Acompanhe o follow-up semana a semana</li>
+        <li class="step"><div class="step-num">3</div>Atualize a situação conforme o contato avança</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- RECEPÇÃO -->
+  <div class="section" id="section-recepcao">
+    <div class="welcome-card show">
+      <div class="welcome-title">🤝 Recepção</div>
+      <div class="welcome-desc">Você é o primeiro contato de quem chega. Seu papel no sistema é registrar quem veio e garantir que nenhum visitante seja esquecido.</div>
+    </div>
+
+    <div class="section-title">No dia do culto</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📋</div>
+        <div><div class="feature-name">Ver sua escala</div><div class="feature-sub">Menu → Escalas</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto de hoje</li>
+        <li class="step"><div class="step-num">2</div>Veja quem está escalado com você na Recepção</li>
+        <li class="step"><div class="step-num">3</div>Após o culto, confirme presença de quem foi — toque no nome e marque ✓ Presente</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">👥</div>
+        <div><div class="feature-name">Registrar visitantes</div><div class="feature-sub">Menu → Visitantes</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Toque em <strong>+ Novo</strong></li>
+        <li class="step"><div class="step-num">2</div>Preencha nome e telefone — é o mínimo necessário</li>
+        <li class="step"><div class="step-num">3</div>Adicione como conheceu o ministério se souber</li>
+        <li class="step"><div class="step-num">4</div>Se for segunda visita, marque a opção</li>
+      </ul>
+      <div class="tip"><strong>Dica rápida</strong> Não precisa preencher tudo na hora. Capture nome e telefone — o resto pode completar depois.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📝</div>
+        <div><div class="feature-name">Relatório de presença</div><div class="feature-sub">Menu → Relatório</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto</li>
+        <li class="step"><div class="step-num">2</div>Informe o total de presentes e quantos eram membros</li>
+        <li class="step"><div class="step-num">3</div>Salve — esses dados aparecem no Dashboard</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MÍDIA -->
+  <div class="section" id="section-midia">
+    <div class="welcome-card show">
+      <div class="welcome-title">🎥 Mídia</div>
+      <div class="welcome-desc">Seu acesso é focado na operação técnica do culto. Você vê sua escala e pode registrar o relatório técnico após o culto.</div>
+    </div>
+
+    <div class="section-title">No dia do culto</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📋</div>
+        <div><div class="feature-name">Ver sua escala</div><div class="feature-sub">Menu → Escalas</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto de hoje</li>
+        <li class="step"><div class="step-num">2</div>Você edita apenas o bloco de Mídia</li>
+        <li class="step"><div class="step-num">3</div>Após o culto, confirme sua presença</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📝</div>
+        <div><div class="feature-name">Relatório técnico</div><div class="feature-sub">Menu → Relatório</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto</li>
+        <li class="step"><div class="step-num">2</div>Registre problemas técnicos ou observações de equipamentos</li>
+        <li class="step"><div class="step-num">3</div>Salve para que a liderança possa acompanhar</li>
+      </ul>
+      <div class="tip"><strong>Por que registrar?</strong> Problemas recorrentes ficam documentados e ajudam a tomar decisões de equipamento e melhoria.</div>
+    </div>
+  </div>
+
+  <!-- BISTRÔ -->
+  <div class="section" id="section-bistro">
+    <div class="welcome-card show">
+      <div class="welcome-title">☕ Bistrô</div>
+      <div class="welcome-desc">Seu acesso é focado na operação do bistrô. Você vê sua escala e registra as vendas após cada culto.</div>
+    </div>
+
+    <div class="section-title">No dia do culto</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📋</div>
+        <div><div class="feature-name">Ver sua escala</div><div class="feature-sub">Menu → Escalas</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto de hoje</li>
+        <li class="step"><div class="step-num">2</div>Você edita apenas o bloco do Bistrô</li>
+        <li class="step"><div class="step-num">3</div>Confirme sua presença após o culto</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📝</div>
+        <div><div class="feature-name">Relatório de vendas</div><div class="feature-sub">Menu → Relatório</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Selecione o culto</li>
+        <li class="step"><div class="step-num">2</div>Informe o total vendido no bistrô</li>
+        <li class="step"><div class="step-num">3</div>Adicione observações se necessário e salve</li>
+      </ul>
+      <div class="tip"><strong>Importante</strong> Registre sempre no mesmo dia — ajuda a manter o histórico financeiro do ministério organizado.</div>
+    </div>
+  </div>
+
+  <!-- FINANCEIRO -->
+  <div class="section" id="section-financeiro">
+    <div class="welcome-card show">
+      <div class="welcome-title">💰 Financeiro</div>
+      <div class="welcome-desc">Seu acesso é focado no controle financeiro do ministério. Você registra entradas e saídas e acompanha os cultos cadastrados.</div>
+    </div>
+
+    <div class="section-title">Controle financeiro</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">💰</div>
+        <div><div class="feature-name">Registrar lançamento</div><div class="feature-sub">Menu → Financeiro</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Toque em <strong>+ Novo lançamento</strong></li>
+        <li class="step"><div class="step-num">2</div>Informe data, descrição, categoria e valor</li>
+        <li class="step"><div class="step-num">3</div>Marque se é entrada ou saída</li>
+        <li class="step"><div class="step-num">4</div>Salve — o lançamento entra no resumo do mês</li>
+      </ul>
+      <div class="tip"><strong>Organização</strong> Use sempre as mesmas categorias (ofertas, aluguel, equipamento etc.) para o resumo mensal ficar consistente.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">📅</div>
+        <div><div class="feature-name">Consultar cultos</div><div class="feature-sub">Menu → Cultos</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Veja a lista de cultos cadastrados</li>
+        <li class="step"><div class="step-num">2</div>Use como referência para lançar ofertas por culto, se for o caso</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- GPS PRECURSORES (programa, não é um perfil de login) -->
+  <div class="section" id="section-gps">
+    <div class="welcome-card show">
+      <div class="welcome-title">🌍 GPS Precursores</div>
+      <div class="welcome-desc">Não é um perfil de login — é o programa de células de evangelismo e discipulado do MIP Church. Esta página explica como funciona, para qualquer pessoa envolvida como líder, anfitrião ou professor de crianças.</div>
+    </div>
+
+    <div class="section-title">Nomenclatura do programa</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">🌍</div>
+        <div><div class="feature-name">Amigos, Etíopes e Felipes</div><div class="feature-sub">Baseado em Atos 8:26-40</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div><strong>Amigos</strong> — ainda não fazem parte de um grupo</li>
+        <li class="step"><div class="step-num">2</div><strong>Etíopes</strong> — já alcançados, em progresso rumo ao batismo</li>
+        <li class="step"><div class="step-num">3</div><strong>Felipes</strong> — membros batizados que servem ativamente no programa</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Ciclo de 16 semanas</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">1️⃣</div>
+        <div><div class="feature-name">Fase 1 — Ciclo de Conversão do Amigo</div><div class="feature-sub">Semanas 1 a 5</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Cada Felipe convida seus Amigos para o grupo</li>
+        <li class="step"><div class="step-num">2</div>A fase culmina na Festa do Amigo</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">2️⃣</div>
+        <div><div class="feature-name">Fase 2 — Consolidação</div><div class="feature-sub">Semanas 6 a 8</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Os novos Etíopes participam dos cultos gerais da igreja</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">3️⃣</div>
+        <div><div class="feature-name">Fase 3 — Discipulado</div><div class="feature-sub">Semanas 9 a 16 · 8 lições</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>8 lições de discipulado, aproximadamente nesta ordem</li>
+        <li class="step"><div class="step-num">2</div>Mordomia entra por volta da lição 5-6</li>
+        <li class="step"><div class="step-num">3</div>Jejum e Oração entra por volta da lição 7</li>
+        <li class="step"><div class="step-num">4</div>A última lição é sempre sobre Batismo</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Papéis em cada grupo</div>
+    <div class="feature-card">
+      <div class="feature-header">
+        <div class="feature-icon">👥</div>
+        <div><div class="feature-name">3 pessoas comprometidas por grupo</div><div class="feature-sub">Líder · Anfitrião · Professor de Crianças</div></div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div><strong>Líder</strong> — conduz o encontro e a Palavra da semana</li>
+        <li class="step"><div class="step-num">2</div><strong>Anfitrião</strong> — recebe o grupo, geralmente em sua casa</li>
+        <li class="step"><div class="step-num">3</div><strong>Professor de Crianças</strong> — cuida das crianças durante o encontro</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Estrutura do encontro (60 min)</div>
+    <div class="feature-card">
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div>Acolhida — 5 min</li>
+        <li class="step"><div class="step-num">2</div>Adoração — 8 min</li>
+        <li class="step"><div class="step-num">3</div>Dinâmica quebra-gelo — 10 min</li>
+        <li class="step"><div class="step-num">4</div>Palavra — 20 min, termina apresentando a ação prática da semana</li>
+        <li class="step"><div class="step-num">5</div>Direcionamento prático — 5 min</li>
+        <li class="step"><div class="step-num">6</div>Oração final — 5 min</li>
+        <li class="step"><div class="step-num">7</div>Confraternização — 5 min</li>
+        <li class="step"><div class="step-num">8</div>Anúncios — 2 min</li>
+      </ul>
+      <div class="tip"><strong>Relatório semanal</strong> Cada líder envia um relatório de presença/ausência à liderança central toda semana — é acompanhamento pastoral, não cobrança.</div>
+    </div>
+  </div>
+
+  <div class="footer">MIP Church · Sistema v1.0</div>
+</div>
+
+<script>
+function selectRole(role) {
+  // Update buttons
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  // Hide all sections
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('show'));
+  document.getElementById('empty-state').classList.remove('show');
+
+  // Show selected section
+  const section = document.getElementById('section-' + role);
+  if (section) {
+    section.classList.add('show');
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+</script>
+</body>
+</html>

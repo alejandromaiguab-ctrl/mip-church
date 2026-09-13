@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIP Church — Cadastro de Equipe</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #F5F4F0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px 32px 36px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.07);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .logo-circle {
+    width: 44px;
+    height: 44px;
+    background: #0D0D0D;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+  }
+
+  .logo-txt h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0D0D0D;
+    line-height: 1.2;
+  }
+
+  .logo-txt p {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.3;
+  }
+
+  .form-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0D0D0D;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .form-sub {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #E0DED8;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #0D0D0D;
+    background: #fff;
+    font-family: inherit;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: #0D0D0D;
+  }
+
+  input::placeholder { color: #bbb; }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: #0D0D0D;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s;
+  }
+
+  .btn:hover { background: #222; }
+  .btn:active { transform: scale(0.98); }
+
+  .wpp-icon {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+  }
+
+  .erro {
+    color: #c00;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .rodape {
+    text-align: center;
+    font-size: 11px;
+    color: #bbb;
+    margin-top: 24px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-circle">MC</div>
+    <div class="logo-txt">
+      <h1>MIP Church</h1>
+      <p>Cadastro de Equipe</p>
+    </div>
+  </div>
+
+  <h2 class="form-title">Cadastro da Equipe</h2>
+  <p class="form-sub">Preencha seus dados para receber o acesso ao sistema do ministério.</p>
+
+  <div class="field">
+    <label>Nome completo</label>
+    <input type="text" id="nome" placeholder="Seu nome completo">
+    <div class="erro" id="err-nome">Por favor, informe seu nome.</div>
+  </div>
+
+  <div class="field">
+    <label>E-mail</label>
+    <input type="email" id="email" placeholder="seu@email.com">
+    <div class="erro" id="err-email">Por favor, informe um e-mail válido.</div>
+  </div>
+
+  <div class="field">
+    <label>WhatsApp</label>
+    <input type="tel" id="telefone" placeholder="(51) 99999-9999">
+    <div class="erro" id="err-tel">Por favor, informe seu telefone.</div>
+  </div>
+
+  <div class="field">
+    <label>Área de serviço no ministério</label>
+    <select id="area">
+      <option value="">Selecione sua área...</option>
+      <option>Liderança / Pastoral</option>
+      <option>Recepção</option>
+      <option>Louvor</option>
+      <option>Mídia</option>
+      <option>Bistrô</option>
+      <option>Intercessão</option>
+      <option>Estacionamento</option>
+      <option>Financeiro</option>
+      <option>Outra</option>
+    </select>
+    <div class="erro" id="err-area">Por favor, selecione sua área.</div>
+  </div>
+
+  <button class="btn" onclick="enviar()">
+    <svg class="wpp-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    Enviar para o Pastor Alejandro
+  </button>
+
+  <p class="rodape">Ao enviar, seus dados serão encaminhados via WhatsApp<br>para a liderança do MIP Church.</p>
+</div>
+
+<script>
+  function enviar() {
+    const nome     = document.getElementById('nome').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    const area     = document.getElementById('area').value;
+
+    let ok = true;
+
+    function mostrarErro(id, show) {
+      document.getElementById(id).style.display = show ? 'block' : 'none';
+    }
+
+    mostrarErro('err-nome',  !nome);
+    mostrarErro('err-email', !email || !email.includes('@'));
+    mostrarErro('err-tel',   !telefone);
+    mostrarErro('err-area',  !area);
+
+    if (!nome || !email || !email.includes('@') || !telefone || !area) return;
+
+    const msg = `Olá! Segue meu cadastro para o sistema MIP Church:%0A%0A` +
+      `*Nome:* ${encodeURIComponent(nome)}%0A` +
+      `*E-mail:* ${encodeURIComponent(email)}%0A` +
+      `*WhatsApp:* ${encodeURIComponent(telefone)}%0A` +
+      `*Área de serviço:* ${encodeURIComponent(area)}`;
+
+    window.open(`https://wa.me/5551992812672?text=${msg}`, '_blank');
+  }
+</script>
+</body>
+</html>
