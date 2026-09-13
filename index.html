@@ -243,6 +243,7 @@ tr:hover td{background:var(--g50)}
       <div class="nav-lbl">Gestão</div>
       <div class="nav-item" data-page="membros"><span class="nav-icon">🏠</span>Membros</div>
       <div class="nav-item" data-page="voluntarios"><span class="nav-icon">🙋</span>Voluntários</div>
+      <div class="nav-item" data-page="gps"><span class="nav-icon">🌍</span>GPS Precursores</div>
       <div class="nav-item" data-page="financeiro" id="nav-fin"><span class="nav-icon">💰</span>Financeiro</div>
       <div class="nav-item" data-page="usuarios" id="nav-users"><span class="nav-icon">🔑</span>Usuários</div>
     </div>
@@ -293,9 +294,9 @@ const db=createClient(SUPA_URL,SUPA_KEY);
 
 const ROLE_LABELS={admin:'Admin',coordenador:'Coordenador',lideranca:'Liderança',recepcao:'Recepção',bistro:'Bistrô',midia:'Mídia',financeiro:'Financeiro'};
 const ROLE_NAV={
-  admin:      ['boasvindas','dashboard','cultos','escalas','ordemculto','calendario','relatorio','decisoes','visitantes','membros','voluntarios','financeiro','usuarios'],
-  coordenador:['boasvindas','dashboard','cultos','escalas','ordemculto','calendario','relatorio','decisoes','visitantes','membros','voluntarios'],
-  lideranca:  ['boasvindas','dashboard','cultos','escalas','ordemculto','relatorio','decisoes','visitantes','membros','voluntarios'],
+  admin:      ['boasvindas','dashboard','cultos','escalas','ordemculto','calendario','relatorio','decisoes','visitantes','membros','voluntarios','gps','financeiro','usuarios'],
+  coordenador:['boasvindas','dashboard','cultos','escalas','ordemculto','calendario','relatorio','decisoes','visitantes','membros','voluntarios','gps'],
+  lideranca:  ['boasvindas','dashboard','cultos','escalas','ordemculto','relatorio','decisoes','visitantes','membros','voluntarios','gps'],
   recepcao:   ['boasvindas','dashboard','escalas','relatorio','visitantes'],
   bistro:     ['boasvindas','dashboard','escalas','relatorio'],
   midia:      ['boasvindas','dashboard','escalas','relatorio'],
@@ -483,9 +484,9 @@ function navigate(page){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const ni=document.querySelector(`.nav-item[data-page="${page}"]`);
   if(ni)ni.classList.add('active');
-  const titles={boasvindas:'Início',dashboard:'Dashboard',cultos:'Cultos',escalas:'Escalas',ordemculto:'Ordem do Culto',calendario:'Calendário',relatorio:'Relatório Pós-Culto',decisoes:'Acompanhamento de Decisões',visitantes:'Visitantes',membros:'Membros',voluntarios:'Voluntários',financeiro:'Financeiro',usuarios:'Usuários'};
+  const titles={boasvindas:'Início',dashboard:'Dashboard',cultos:'Cultos',escalas:'Escalas',ordemculto:'Ordem do Culto',calendario:'Calendário',relatorio:'Relatório Pós-Culto',decisoes:'Acompanhamento de Decisões',visitantes:'Visitantes',membros:'Membros',voluntarios:'Voluntários',gps:'GPS Precursores',financeiro:'Financeiro',usuarios:'Usuários'};
   document.getElementById('page-title').textContent=titles[page]||page;
-  ({boasvindas:renderBoasVindas,dashboard:renderDashboard,cultos:renderCultos,escalas:renderEscalas,ordemculto:renderOrdemCulto,calendario:renderCalendario,relatorio:renderRelatorio,decisoes:renderDecisoes,visitantes:renderVisitantes,membros:renderMembros,voluntarios:renderVoluntarios,financeiro:renderFinanceiro,usuarios:renderUsuarios}[page]||renderDashboard)();
+  ({boasvindas:renderBoasVindas,dashboard:renderDashboard,cultos:renderCultos,escalas:renderEscalas,ordemculto:renderOrdemCulto,calendario:renderCalendario,relatorio:renderRelatorio,decisoes:renderDecisoes,visitantes:renderVisitantes,membros:renderMembros,voluntarios:renderVoluntarios,gps:renderGPS,financeiro:renderFinanceiro,usuarios:renderUsuarios}[page]||renderDashboard)();
 }
 
 // ── BOAS-VINDAS
@@ -501,8 +502,8 @@ const VERSICULOS=[
   {titulo:'Persevere — vale a pena.',texto:'"Não nos cansemos de fazer o bem, pois, se não desanimarmos, a seu tempo colheremos."',ref:'Gálatas 6:9'},
   {titulo:'Você é instrumento de Deus.',texto:'"Porque somos cooperadores de Deus; vocês são lavoura de Deus, são edifício de Deus."',ref:'1 Coríntios 3:9'},
 ];
-const PAGE_LABELS={dashboard:'Dashboard',cultos:'Cultos',escalas:'Escalas',ordemculto:'Ordem do Culto',calendario:'Calendário',relatorio:'Relatório',decisoes:'Decisões',visitantes:'Visitantes',membros:'Membros',voluntarios:'Voluntários',financeiro:'Financeiro',usuarios:'Usuários'};
-const PAGE_ICONS={dashboard:'◉',cultos:'📅',escalas:'📋',ordemculto:'🎙',calendario:'🗓',relatorio:'📝',decisoes:'🙏',visitantes:'👥',membros:'🏠',voluntarios:'🙋',financeiro:'💰',usuarios:'🔑'};
+const PAGE_LABELS={dashboard:'Dashboard',cultos:'Cultos',escalas:'Escalas',ordemculto:'Ordem do Culto',calendario:'Calendário',relatorio:'Relatório',decisoes:'Decisões',visitantes:'Visitantes',membros:'Membros',voluntarios:'Voluntários',gps:'GPS Precursores',financeiro:'Financeiro',usuarios:'Usuários'};
+const PAGE_ICONS={dashboard:'◉',cultos:'📅',escalas:'📋',ordemculto:'🎙',calendario:'🗓',relatorio:'📝',decisoes:'🙏',visitantes:'👥',membros:'🏠',voluntarios:'🙋',gps:'🌍',financeiro:'💰',usuarios:'🔑'};
 
 async function renderBoasVindas(){
   const c=document.getElementById('content');
@@ -1778,6 +1779,267 @@ async function deleteAviso(id){
   if(!confirm('Excluir aviso?'))return;
   await db.from('avisos').delete().eq('id',id);
   toast('Aviso excluído.');renderAvisos();loadAvisosBanner();
+}
+
+// ── GPS PRECURSORES
+const GPS_FASES=[
+  {min:1,max:5,nome:'Fase 1 — Conversão do Amigo'},
+  {min:6,max:8,nome:'Fase 2 — Consolidação'},
+  {min:9,max:16,nome:'Fase 3 — Discipulado'},
+];
+const GPS_CATS={amigo:'Amigo',etiope:'Etíope',felipe:'Felipe'};
+const GPS_CAT_BADGE={amigo:'badge-gray',etiope:'badge-blue',felipe:'badge-green'};
+function gpsFaseAtual(semana){return GPS_FASES.find(f=>semana>=f.min&&semana<=f.max)||GPS_FASES[0];}
+window._gpsGrupoAtual=null;
+
+async function renderGPS(){
+  if(!CAN_MEMBROS.includes(currentRole)){document.getElementById('content').innerHTML=`<div class="card"><div class="empty-state"><div class="empty-icon">🔒</div>Acesso não permitido.</div></div>`;return;}
+  const{data}=await db.from('gps_grupos').select('*').eq('ativo',true).order('nome');
+  const grupos=data||[];
+  const volNome=id=>allVols.find(v=>v.id===id)?.nome||'—';
+  let html=`<div class="sec-actions"><h2>GPS Precursores</h2><button class="btn btn-primary btn-sm" onclick="openModalGpsGrupo()">+ Novo Grupo</button></div>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Grupos ativos</div><div class="metric-value">${grupos.length}</div></div>
+  </div>`;
+  if(!grupos.length){html+=`<div class="card"><div class="empty-state"><div class="empty-icon">🌍</div>Nenhum grupo GPS cadastrado ainda.</div></div>`;}
+  else{
+    grupos.forEach(g=>{
+      const fase=gpsFaseAtual(g.semana_atual||1);
+      html+=`<div class="membro-card" style="align-items:center">
+        <div class="membro-avatar-ph">🌍</div>
+        <div class="membro-info">
+          <div class="membro-nome">${g.nome}</div>
+          <div class="membro-detalhe">👤 Líder: ${volNome(g.lider_id)}</div>
+          ${g.dia_semana||g.horario?`<div class="membro-detalhe">🗓 ${g.dia_semana||''} ${g.horario||''}</div>`:''}
+          <div class="membro-detalhe">📍 Semana ${g.semana_atual||1}/16 · ${fase.nome}</div>
+          <div class="membro-actions">
+            <button class="btn btn-secondary btn-sm" onclick="abrirGpsGrupo('${g.id}')">Abrir</button>
+            <button class="btn btn-secondary btn-sm" onclick="editGpsGrupo('${g.id}')">Editar</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+  document.getElementById('content').innerHTML=html;
+}
+
+function gpsGrupoFormHtml(g={}){
+  const vOpts=(sel)=>`<option value="">— Selecionar —</option>`+allVols.map(v=>`<option value="${v.id}"${sel===v.id?' selected':''}>${v.nome}</option>`).join('');
+  return`
+    <div class="f"><label>Nome do grupo</label><input type="text" id="gg-nome" value="${g.nome||''}" placeholder="Ex: GPS Zona Sul"></div>
+    <div class="form-row">
+      <div class="f"><label>Líder</label><select id="gg-lider">${vOpts(g.lider_id)}</select></div>
+      <div class="f"><label>Anfitrião</label><select id="gg-anfitriao">${vOpts(g.anfitriao_id)}</select></div>
+    </div>
+    <div class="f"><label>Professor de Crianças</label><select id="gg-prof">${vOpts(g.professor_criancas_id)}</select></div>
+    <div class="form-row">
+      <div class="f"><label>Dia da semana</label><input type="text" id="gg-dia" value="${g.dia_semana||''}" placeholder="Ex: Quarta-feira"></div>
+      <div class="f"><label>Horário</label><input type="text" id="gg-hora" value="${g.horario||''}" placeholder="Ex: 20h"></div>
+    </div>
+    <div class="f"><label>Endereço</label><input type="text" id="gg-end" value="${g.endereco||''}" placeholder="Onde o grupo se reúne"></div>
+    <div class="form-row">
+      <div class="f"><label>Início do ciclo</label><input type="date" id="gg-inicio" value="${g.data_inicio_ciclo||''}"></div>
+      <div class="f"><label>Semana atual (1-16)</label><input type="number" id="gg-semana" min="1" max="16" value="${g.semana_atual||1}"></div>
+    </div>`;
+}
+function openModalGpsGrupo(){
+  document.getElementById('modal-title').textContent='Novo Grupo GPS';
+  document.getElementById('modal-body').innerHTML=gpsGrupoFormHtml()+`<button class="btn btn-primary btn-full" style="margin-top:8px" onclick="saveGpsGrupo()">Salvar</button>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+async function editGpsGrupo(id){
+  const{data:g}=await db.from('gps_grupos').select('*').eq('id',id).single();
+  document.getElementById('modal-title').textContent='Editar Grupo GPS';
+  document.getElementById('modal-body').innerHTML=gpsGrupoFormHtml(g)+`<div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-primary" style="flex:1" onclick="updateGpsGrupo('${id}')">Salvar</button><button class="btn btn-danger" onclick="desativarGpsGrupo('${id}')">Desativar</button></div>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+function getGpsGrupoData(){
+  return{
+    nome:gv('gg-nome'),
+    lider_id:gv('gg-lider')||null,
+    anfitriao_id:gv('gg-anfitriao')||null,
+    professor_criancas_id:gv('gg-prof')||null,
+    dia_semana:gv('gg-dia'),
+    horario:gv('gg-hora'),
+    endereco:gv('gg-end'),
+    data_inicio_ciclo:gv('gg-inicio')||null,
+    semana_atual:parseInt(gv('gg-semana'))||1,
+  };
+}
+async function saveGpsGrupo(){
+  if(!gv('gg-nome')){toast('Informe o nome do grupo.');return;}
+  const{error}=await db.from('gps_grupos').insert({...getGpsGrupoData(),ativo:true});
+  if(error){toast('Erro ao salvar: '+error.message,5000);console.error('saveGpsGrupo',error);return;}
+  toast('Grupo GPS criado!');closeModal();renderGPS();
+}
+async function updateGpsGrupo(id){
+  const{error}=await db.from('gps_grupos').update(getGpsGrupoData()).eq('id',id);
+  if(error){toast('Erro ao salvar: '+error.message,5000);console.error('updateGpsGrupo',error);return;}
+  toast('Atualizado!');closeModal();
+  if(window._gpsGrupoAtual===id)abrirGpsGrupo(id);else renderGPS();
+}
+async function desativarGpsGrupo(id){
+  if(!confirm('Desativar este grupo GPS? Ele deixará de aparecer na lista.'))return;
+  await db.from('gps_grupos').update({ativo:false}).eq('id',id);
+  toast('Grupo desativado.');closeModal();renderGPS();
+}
+
+// ── GPS: detalhe do grupo (participantes + relatórios semanais)
+async function abrirGpsGrupo(id){
+  window._gpsGrupoAtual=id;
+  const c=document.getElementById('content');
+  c.innerHTML=`<div class="empty-state">Carregando…</div>`;
+  const[{data:g},{data:parts},{data:rels}]=await Promise.all([
+    db.from('gps_grupos').select('*').eq('id',id).single(),
+    db.from('gps_participantes').select('*').eq('grupo_id',id).order('nome'),
+    db.from('gps_relatorios_semanais').select('*').eq('grupo_id',id).order('semana',{ascending:false}),
+  ]);
+  const volNome=vid=>allVols.find(v=>v.id===vid)?.nome||'—';
+  const participantes=parts||[];
+  const relatorios=rels||[];
+  const fase=gpsFaseAtual(g.semana_atual||1);
+  const contagem={amigo:0,etiope:0,felipe:0};
+  participantes.forEach(p=>{if(contagem[p.categoria]!==undefined)contagem[p.categoria]++;});
+
+  let html=`<div class="sec-actions"><button class="btn btn-secondary btn-sm" onclick="renderGPS()">◀ Voltar</button><h2 style="margin-left:4px">${g.nome}</h2></div>
+  <div class="card">
+    <div class="card-title">Sobre o grupo</div>
+    <div class="membro-detalhe">👤 Líder: ${volNome(g.lider_id)}</div>
+    <div class="membro-detalhe">🏠 Anfitrião: ${volNome(g.anfitriao_id)}</div>
+    <div class="membro-detalhe">🧒 Professor de Crianças: ${volNome(g.professor_criancas_id)}</div>
+    ${g.endereco?`<div class="membro-detalhe">📍 ${g.endereco}</div>`:''}
+    ${g.dia_semana||g.horario?`<div class="membro-detalhe">🗓 ${g.dia_semana||''} ${g.horario||''}</div>`:''}
+    <div class="membro-detalhe">📅 Semana ${g.semana_atual||1}/16 · ${fase.nome}</div>
+    <div class="membro-actions" style="margin-top:10px">
+      <button class="btn btn-secondary btn-sm" onclick="editGpsGrupo('${id}')">✏️ Editar grupo</button>
+      ${(g.semana_atual||1)<16?`<button class="btn btn-secondary btn-sm" onclick="avancarSemanaGps('${id}',${g.semana_atual||1})">➡️ Avançar semana</button>`:'<span class="badge badge-green">✓ Ciclo completo</span>'}
+    </div>
+  </div>
+
+  <div class="sec-actions"><h2>Participantes</h2><button class="btn btn-primary btn-sm" onclick="openModalGpsParticipante('${id}')">+ Novo</button></div>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Amigos</div><div class="metric-value">${contagem.amigo}</div></div>
+    <div class="metric"><div class="metric-label">Etíopes</div><div class="metric-value">${contagem.etiope}</div></div>
+    <div class="metric"><div class="metric-label">Felipes</div><div class="metric-value">${contagem.felipe}</div></div>
+  </div>`;
+  if(!participantes.length){html+=`<div class="card"><div class="empty-state"><div class="empty-icon">👥</div>Nenhum participante cadastrado ainda.</div></div>`;}
+  else{
+    participantes.forEach(p=>{
+      const wpp=wppLink(p.telefone);
+      html+=`<div class="membro-card" style="align-items:center">
+        <div class="membro-avatar-ph">👤</div>
+        <div class="membro-info">
+          <div class="membro-nome">${p.nome} <span class="badge ${GPS_CAT_BADGE[p.categoria]||'badge-gray'}">${GPS_CATS[p.categoria]||p.categoria}</span></div>
+          ${p.telefone?`<div class="membro-detalhe">📱 ${p.telefone}</div>`:''}
+          <div class="membro-actions">
+            ${wpp?`<a href="${wpp}" target="_blank" class="btn btn-wpp btn-sm" style="text-decoration:none">💬</a>`:''}
+            <button class="btn btn-secondary btn-sm" onclick="editGpsParticipante('${p.id}','${id}')">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="removerGpsParticipante('${p.id}','${id}')">Remover</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+
+  html+=`<div class="sec-actions"><h2>Relatórios semanais</h2><button class="btn btn-primary btn-sm" onclick="openModalGpsRelatorio('${id}',${g.semana_atual||1})">+ Novo relatório</button></div>`;
+  if(!relatorios.length){html+=`<div class="card"><div class="empty-state"><div class="empty-icon">📝</div>Nenhum relatório semanal registrado ainda.</div></div>`;}
+  else{
+    relatorios.forEach(r=>{
+      html+=`<div class="card" style="padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><strong>Semana ${r.semana}</strong>${r.data?`<span class="membro-detalhe">${fmtDate(r.data)}</span>`:''}</div>
+        <div class="membro-detalhe">✅ Presentes: ${r.presentes??0} · ❌ Ausentes: ${r.ausentes??0} · 🆕 Visitantes: ${r.visitantes??0}</div>
+        ${r.motivo_ausencias?`<div class="membro-detalhe">Motivo das ausências: ${r.motivo_ausencias}</div>`:''}
+        ${r.observacoes?`<div class="membro-detalhe">${r.observacoes}</div>`:''}
+      </div>`;
+    });
+  }
+  c.innerHTML=html;
+}
+
+async function avancarSemanaGps(id,semanaAtual){
+  const nova=Math.min(16,semanaAtual+1);
+  await db.from('gps_grupos').update({semana_atual:nova}).eq('id',id);
+  toast(`Semana atualizada para ${nova}/16.`);
+  abrirGpsGrupo(id);
+}
+
+function gpsParticipanteFormHtml(p={}){
+  return`
+    <div class="f"><label>Nome</label><input type="text" id="gp-nome" value="${p.nome||''}" placeholder="Nome completo"></div>
+    <div class="form-row">
+      <div class="f"><label>Telefone</label><input type="tel" id="gp-tel" value="${p.telefone||''}" placeholder="(xx) xxxxx-xxxx"></div>
+      <div class="f"><label>Categoria</label><select id="gp-cat">
+        <option value="amigo"${(p.categoria||'amigo')==='amigo'?' selected':''}>Amigo</option>
+        <option value="etiope"${p.categoria==='etiope'?' selected':''}>Etíope</option>
+        <option value="felipe"${p.categoria==='felipe'?' selected':''}>Felipe</option>
+      </select></div>
+    </div>
+    <div class="f"><label>Data de entrada no grupo</label><input type="date" id="gp-entrada" value="${p.data_entrada||''}"></div>
+    <div class="f"><label>Observações</label><textarea id="gp-obs">${p.observacoes||''}</textarea></div>`;
+}
+function openModalGpsParticipante(grupoId){
+  document.getElementById('modal-title').textContent='Novo Participante';
+  document.getElementById('modal-body').innerHTML=gpsParticipanteFormHtml()+`<button class="btn btn-primary btn-full" style="margin-top:8px" onclick="saveGpsParticipante('${grupoId}')">Salvar</button>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+async function editGpsParticipante(id,grupoId){
+  const{data:p}=await db.from('gps_participantes').select('*').eq('id',id).single();
+  document.getElementById('modal-title').textContent='Editar Participante';
+  document.getElementById('modal-body').innerHTML=gpsParticipanteFormHtml(p)+`<button class="btn btn-primary btn-full" style="margin-top:8px" onclick="updateGpsParticipante('${id}','${grupoId}')">Salvar</button>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+function getGpsParticipanteData(){return{nome:gv('gp-nome'),telefone:gv('gp-tel'),categoria:gv('gp-cat')||'amigo',data_entrada:gv('gp-entrada')||null,observacoes:gv('gp-obs')};}
+async function saveGpsParticipante(grupoId){
+  if(!gv('gp-nome')){toast('Informe o nome.');return;}
+  const{error}=await db.from('gps_participantes').insert({...getGpsParticipanteData(),grupo_id:grupoId});
+  if(error){toast('Erro ao salvar: '+error.message,5000);console.error('saveGpsParticipante',error);return;}
+  toast('Participante adicionado!');closeModal();abrirGpsGrupo(grupoId);
+}
+async function updateGpsParticipante(id,grupoId){
+  const{error}=await db.from('gps_participantes').update(getGpsParticipanteData()).eq('id',id);
+  if(error){toast('Erro ao salvar: '+error.message,5000);console.error('updateGpsParticipante',error);return;}
+  toast('Atualizado!');closeModal();abrirGpsGrupo(grupoId);
+}
+async function removerGpsParticipante(id,grupoId){
+  if(!confirm('Remover este participante do grupo?'))return;
+  await db.from('gps_participantes').delete().eq('id',id);
+  toast('Participante removido.');abrirGpsGrupo(grupoId);
+}
+
+function gpsRelatorioFormHtml(semanaSugerida){
+  return`
+    <div class="form-row">
+      <div class="f"><label>Semana (1-16)</label><input type="number" id="gr-semana" min="1" max="16" value="${semanaSugerida||1}"></div>
+      <div class="f"><label>Data do encontro</label><input type="date" id="gr-data" value="${new Date().toISOString().split('T')[0]}"></div>
+    </div>
+    <div class="form-row">
+      <div class="f"><label>Presentes</label><input type="number" id="gr-pres" min="0" placeholder="0"></div>
+      <div class="f"><label>Ausentes</label><input type="number" id="gr-aus" min="0" placeholder="0"></div>
+      <div class="f"><label>Visitantes</label><input type="number" id="gr-vis" min="0" placeholder="0"></div>
+    </div>
+    <div class="f"><label>Motivo das ausências</label><input type="text" id="gr-motivo" placeholder="Acompanhamento pastoral, não cobrança"></div>
+    <div class="f"><label>Observações</label><textarea id="gr-obs"></textarea></div>`;
+}
+function openModalGpsRelatorio(grupoId,semanaAtual){
+  document.getElementById('modal-title').textContent='Novo Relatório Semanal';
+  document.getElementById('modal-body').innerHTML=gpsRelatorioFormHtml(semanaAtual)+`<button class="btn btn-primary btn-full" style="margin-top:8px" onclick="saveGpsRelatorio('${grupoId}')">Salvar</button>`;
+  document.getElementById('modal').classList.remove('hidden');
+}
+async function saveGpsRelatorio(grupoId){
+  const semana=parseInt(gv('gr-semana'))||1;
+  const{error}=await db.from('gps_relatorios_semanais').insert({
+    grupo_id:grupoId,
+    semana,
+    data:gv('gr-data')||null,
+    presentes:parseInt(gv('gr-pres'))||0,
+    ausentes:parseInt(gv('gr-aus'))||0,
+    visitantes:parseInt(gv('gr-vis'))||0,
+    motivo_ausencias:gv('gr-motivo'),
+    observacoes:gv('gr-obs'),
+    created_by:currentUser.id,
+  });
+  if(error){toast('Erro ao salvar: '+error.message,5000);console.error('saveGpsRelatorio',error);return;}
+  toast('Relatório salvo!');closeModal();abrirGpsGrupo(grupoId);
 }
 
 // ── FINANCEIRO
